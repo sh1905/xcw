@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>聊天室</title>
+        <link
+            rel="stylesheet"
+            href="{{ static_url('chat.css') }}"
+            type="text/css"
+        />
+        <style>
+            .login {
+                margin: 0 auto;
+                width: 500px;
+                text-align: center;
+            }
+            h1 {
+                font-size: 3em;
+            }
+            form {
+                padding: 100px 0;
+                margin: 100px auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login">
+            <h1>欢迎进入聊天室</h1>
+            <hr />
+            {% if notice %}
+            <p>用户名不能为空<p>
+            {% end %}
+            <form action="/" method="POST">
+                <strong>请在输入您的姓名：</strong>
+                <input type="text" name="username" />
+                <input type="submit" />
+            </form>
+        </div>
+    </body>
+</html>

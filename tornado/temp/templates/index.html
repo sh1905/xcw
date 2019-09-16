@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Xcw</title>
+    </head>
+    <body>
+        <h1 style='text-align:center;'>Xcw</h1>
+
+        {% if sex == '男' %}
+            <div>你好{{ name }},欢迎回来先生！</div>
+        {% elif sex == '女' %}
+            <div>你好{{ name }},欢迎回来美女！</div>
+        {% else  %}
+            <div>你好{{ name }},欢迎回来！您谁啊????</div>
+        {% end %}
+        <hr/>
+        正文：
+        <p>{{ xyz  }}</p>
+
+        <hr/>
+        您今天的菜谱请过目：
+        <ol>
+            {% for item in menu %}
+            <li>{{ item }} </li>
+            {% end  %}
+        </ol>
+        <hr/>
+
+        <div>猜一猜，3 x 2 等于几？</div>
+        <div>
+            我就不告诉你等于<strong>{{ 3 * 2 }}</strong>
+        </div>
+        <div>
+            我就不告诉你什么<strong>{{ [i for i in range(10)] }}</strong>
+        </div>
+    </body>
+</html>
