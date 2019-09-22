@@ -4,16 +4,6 @@ A <--------------------->B
 
 A<============>B
 
-```python
-def speak(self):
-    print('我是%s,')
-def run(self):
-    print()
-attr={}
-Dog=type('Dog',(object,),attr)
-dog = Dog
-```
-
 ## 一、WebSocket介绍
 
 websocket是一种网络通信协议。在2009年诞生，于2011年被IETF定为标为标准RFC 6455通信标准。websocket API也被W3C定为标准。
@@ -115,3 +105,48 @@ class WebsockHandler(tornado.websocket.WebSocketHandler):
 1. 通过Tornado开发一个聊天室程序
 2. 通过WebSocket进行长连接通信
 3. 使用Redis保留100条离线消息
+
+## 元类/元数据metadata
+
+Python中的类也是对象,元类就是用来创建这些类（对象）的，元类就是类的类：
+
+```python
+MyClass = MetaClass()    #元类创建类
+MyObject = MyClass()     #类创建实例
+```
+
+实际上MyClass就是通过type()来创建出MyClass类，它是type()类的一个实例；同时MyClass本身也是类，也可以创建出自己的实例，type也是Python用来创建所有类的元类。
+
+```python
+In [1]: type?                                                                   
+Init signature: type(self, /, *args, **kwargs)
+Docstring:     
+type(object_or_name, bases, dict)
+type(object) -> the object's type
+type(name, bases, dict) -> a new type
+Type:           type
+Subclasses:     ABCMeta, EnumMeta, _TemplateMetaclass, MetaHasDescriptors, LexerMeta, TypingMeta, NamedTupleMeta, StyleMeta, _NormalizerMeta, CachedMetaClass, ...
+```
+
+使用type元类，进行类的创建过程：
+
+```
+In [10]: def speak(self):    # 定义实例方法    
+...:     print('我是%s，我会说话' %self.name)    
+...:     
+In [11]: def run(self):    
+...:     print('%s正在用%d条腿奔跑' %(self.name, self.legs))    
+...:     
+In [12]: attr = {    
+...:      # 定义实例属性    
+...:     'name':'Tom',    
+...:     'age':2,    
+...:     'head':1,    
+...:     'body':1,    
+...:     'legs':4,    
+...:     'tail':1,    
+...:     'speak':speak,    
+...:     'run':run    
+...: }
+In [13]: Cat = type('Cat',(object,),attr)  # 通过type进行类的创建In [14]: cat = Cat()  # 类的实例化In [15]: cat.nameOut[15]: 'Tom'In [16]: cat.speak()我是Tom,我会说话In [17]: cat.run()Tom正在用4条腿跑路
+```
