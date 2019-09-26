@@ -26,7 +26,7 @@ NoSQL数据库按照其存储类型可以大致分为以下几类:
 
 Redis 是一种基于键值对的NoSQL数据库,它提供了对多种数据类型(字符串、哈希、列表、集合、有序集合、位图等)的支持,能够满足很多应用场景的需求。
 
-Redis将数据放在内存中,因此读写性能是非常惊人的。与此同时,Redis也提供了持久化机制,能够将内存中的数据保存到硬盘上,在发生意外状况时数据也不不会丢掉。此外,Redis还支持键过期、地理理信息运算、发布订阅、事务、管道、Lua脚本
+Redis将数据放在内存中,因此读写性能是非常惊人的。与此同时,Redis也提供了持久化机制,能够将内存中的数据保存到硬盘上,在发生意外状况时数据也不不会丢掉。此外,Redis还支持键过期、地理信息运算、发布订阅、事务、管道、Lua脚本
 扩展等功能,总而言之,Redis的功能和性能都非常强大,如果项目中要实现高速缓存和消息队列这样
 的服务,直接交给Redis就可以了。
 
@@ -180,13 +180,13 @@ make && make install
 * 启动Redis服务器：以下使用指定的配置文件启动Redis服务器
 
 ```shell
-redis-server redis.conf
+redis-server 
 ```
 
 * 用Redis客户端去连接服务器。
 
 ```shell
-redis-cli -h localhost -p 6379
+redis-cli 
 ```
 
 Redis有着非常丰富的数据类型,也有很多的命令来操作这些数据,具体的内容可以查看Redis命令参考,在这个`http://redisdoc.com/`网站,除了Redis的命令参考,还有Redis的详细文档,其中包括了通知、事务、主从复制、持久化、哨兵、集群等内容。
@@ -194,11 +194,12 @@ Redis有着非常丰富的数据类型,也有很多的命令来操作这些数�
 ![1568361975208](./images/1568361975208.png)
 
 ```shell
+# 字符串
 127.0.0.1:6379> set username admin
 OK
 127.0.0.1:6379> get username
 "admin"
-127.0.0.1:6379> set password "123456" ex 300 #设置过期时间
+127.0.0.1:6379> set password "123456" ex 300 #设置过期时间，以秒计
 OK
 127.0.0.1:6379> get password
 "123456"
@@ -206,6 +207,7 @@ OK
 (integer) -1
 127.0.0.1:6379> ttl password
 (integer) 286
+# 哈希
 127.0.0.1:6379> hset stu1 name hao
 (integer) 0
 127.0.0.1:6379> hset stu1 age 38
@@ -227,6 +229,7 @@ OK
 1) "hao"
 2) "38"
 3) "male"
+# hset&hget一次只能往哈希结构里面插入一个键值对，如果插入多个可以用hmset&hmget
 127.0.0.1:6379> hmset stu2 name wang age 18 gender female tel 13566778899 # 同时将多个field-value(域-值)对设置到哈希表中
 OK
 127.0.0.1:6379> hgetall stu2 #返回哈希表stu2中所有的域和值
@@ -238,6 +241,7 @@ OK
 6) "female"
 7) "tel"
 8) "13566778899"
+# 列表
 127.0.0.1:6379> lpush nums 1 2 3 4 5
 (integer) 5
 127.0.0.1:6379> lrange nums 0 -1 #返回列表中指定区间内的元素，区间以偏移量 start 和 stop 指定。
@@ -254,6 +258,7 @@ OK
 "1"
 127.0.0.1:6379> rpop nums
 "2"
+# 集合
 127.0.0.1:6379> sadd fruits apple banana orange apple grape 
 (integer) 4
 127.0.0.1:6379> scard fruits #返回集合中元素的数量
@@ -275,7 +280,8 @@ OK
 1) "2"
 2) "4"
 127.0.0.1:6379> sunion nums1 nums2 #并集
-1) "1"2) "2"
+1) "1"
+2) "2"
 3) "3"
 4) "4"
 5) "5"
@@ -339,6 +345,26 @@ b'admin'
 {b'name': b'hao', b'age': b'38'}
 ```
 
+redis命令不区分大小写，所以get var和GET var是等价的
+
+| Redis keys命令       | 描述                                                         |
+| -------------------- | ------------------------------------------------------------ |
+| del  key             | 该命令用于在 key 存在是删除 key。                            |
+| dump  key            | 序列化给定 key ，并返回被序列化的值。                        |
+| exists  key          | 检查给定 key 是否存在。                                      |
+| expire key seconds   | 为给定 key 设置过期时间。                                    |
+| keys  pattern        | 查找所有符合给定模式( pattern)的 key 。例如keys * 返回所有的key |
+| move  key db         | 将当前数据库的 key 移动到给定的数据库 db 当中。              |
+| persist  key         | 移除 key 的过期时间，key 将持久保持。                        |
+| PTTL key             | 以毫秒为单位返回 key 的剩余的过期时间。                      |
+| TTL key              | 以秒为单位，返回给定 key 的剩余生存时间(TTL, time to live)。 |
+| random  key          | 从当前数据库中随机返回一个 key 。                            |
+| rename key newkey    | 修改 key 的名称                                              |
+| renamenx  key newkey | 仅当 newkey 不存在时，将 key 改名为 newkey 。                |
+| type  key            | 返回 key 所储存的值的类型。                                  |
+
+
+
 ## 三、MongoDB概述
 
 ### 1.MongoDB简介
@@ -355,7 +381,7 @@ MongoDB 是一个基于分布式文件存储的数据库。
 
 ### 2.MongoDB的安装和配置
 
-* Linux系统安装和配置MongoDB：`apt install mongodb`
+* Linux系统安装和配置MongoDB：`apt install mongodb`
 
 ```shell
 > wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon-3.6.5.tgz
@@ -594,3 +620,4 @@ for x in mycol.find({},{ "_id": 0, "name": 1, "alexa": 1 }):
 可以使用 **delete_one()** 方法来删除一个文档，该方法第一个参数为查询对象，指定要删除哪些数据。
 
 可以使用 **delete_many()** 方法来删除多个文档，该方法第一个参数为查询对象，指定要删除哪些数据;**delete_many()** 方法如果传入的是一个空的查询对象，则会删除集合中的所有文档：使用 **drop()** 方法来删除一个集合。
+

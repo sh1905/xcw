@@ -95,7 +95,7 @@ Redis列表是简单的字符串列表，按照插入的顺序排序。你可以
 (integer) 2
 127.0.0.1:6379> lpush test rabitmq
 (integer) 3
-127.0.0.1:6379> lrange test 0 10
+127.0.0.1:6379> lrange test 0 -1
 1) "rabitmq"
 2) "mongobd"
 3) "redis"
@@ -152,7 +152,7 @@ zset的成员是唯一的,但分数(score)却可以重复。
 (integer) 1
 127.0.0.1:6379> zadd test 2 rabitmq
 (integer) 1
-127.0.0.1:6379> zrangebyscore test 0 1000
+127.0.0.1:6379> zrangebyscore test 0 -1
 1) "redis"
 2) "mongodb"
 3) "rabitmq"
@@ -191,5 +191,73 @@ Redis 命令用于在 redis 服务上执行操作。要在 redis 服务上执行
   PONG
   ```
 
+
+
+ - Pub/Sub
+
+   > Pub/Sub 从字面上理解就是发布（Publish）与订阅（Subscribe），在Redis中，你可以设定对某一个key值进行消息发布及消息订阅，当一个key值上进行了消息发布后，所有订阅它的客户端都会收到相应的消息。这一功能最明显的用法就是用作实时消息系统，比如普通的即时聊天，群聊等功能
+
+    订阅：
+
+   ```sql
+
+   localhost:6379> subscribe redisChat
+
+   Reading messages... (press Ctrl-C to quit)
+   ```
+```
+   
+1) "subscribe"
+   
+2) "redisChat"
+   
+3) (integer) 1
+   
+在另一个窗口，进行发布
+
+   ```sql
+calhost:6379> publish redisChat "redis is a great caching technique"
+(integer) 1
+```
+
+此时订阅的窗口内容自动更新：
+
+   ```sql
+Reading messages... (press Ctrl-C to quit)
+1) "subscribe"
+2) "redisChat"
+3) (integer) 1
+1) "message"
+2) "redisChat"
+3) "redis is a great caching technique"
+   ```
+
+   - Transactions(事务)
+
+   > 谁说NoSQL都不支持事务，虽然Redis的Transactions提供的并不是严格的ACID的事务（比如一串用EXEC提交执行的命令，在执行中服务器宕机，那么会有一部分命令执行了，剩下的没执行），但是这个Transactions还是提供了基本的命令打包执行的功能（在服务器不出问题的情况下，可以保证一连串的命令是顺序在一起执行的，中间有会有其它客户端命令插进来执行）。Redis还提供了一个Watch功能，你可以对一个key进行Watch，然后再执行Transactions，在这过程中，如果这个Watched的值进行了修改，那么这个Transactions会发现并拒绝执行。
+
+   ```sql
+localhost:6379> multi   -- 开启事务
+OK
+localhost:6379> set book-name "Mastering C++ in 21 day"  -- 添加数据
+QUEUED
+localhost:6379> get book-name -- 得到数据
+QUEUED
+localhost:6379> sadd tag "C++" "Programming" "Mastering Series"  -- 创建集合，并添加数据
+QUEUED
+localhost:6379> smembers tag  -- 得到集合中的数据
+QUEUED
+localhost:6379> exec  -- 执行操作
+1) OK
+2) "Mastering C++ in 21 day"
+3) (integer) 3
+4) 1) "C++"
+   2) "Mastering Series"
+   3) "Programming"
+   ```
+
+```bash
+
+```
 
 

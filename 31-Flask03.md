@@ -100,13 +100,13 @@ ENV_NAME={
   	蓝图注册
   App
   	__init__.py
-  		创建Flask对象
-  		加载settings文件
-  		调用init_ext方法
-  		调用init_blue方法
+  	  |	 创建Flask对象
+  	  |	 加载settings文件
+  	  |	 调用init_ext方法
+  	  V	 调用init_blue方法
   	settings
-          App运行的环境配置
-          SQLALCHEMY_TRACK_MODIFICATIONS运行环境
+        |  App运行的环境配置
+        V  SQLALCHEMY_TRACK_MODIFICATIONS运行环境
       ext（扩展的，额外的）
           用来初始化第三方的各种插件
           Sqlalchemy属性配置 
@@ -131,20 +131,22 @@ from App.models import db
 
 
 def init_ext(app):
-# flask-session持久化
-    app.config['SECRET_KEY'] = '110'
-    app.config['SESSION_TYPE'] = 'redis'
-    app.config['SESSION_KEY_PREFIX'] = 'python1905'
+    # flask-session
+    app.config['SECRET_KEY']='110'
+    app.config['SESSION_TYPE']='redis'
+    app.config['SESSION_KEY_PREFIX']='python1905'
     Session(app=app)
-    # 如果参数传递的是类 那么会将这个类
-    # app.config.from_object(DevelopConfig)
 
-# flask-sqlalchemy
-    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://xcw@182562@localhost:3306/day041905'
 
-    # 注意  db.init_app  一定要放在SQLALCHEMY初始化参数下面,
-    # 如果报错SQLALCHEMY_TRACK_MODIFICATIONS,要么单词写错,要么初始化没有在init之上
+    # 如果参数的传递的是类  那么会将这个类变为一个对象  该对象就具备了 SQLALCHEMY_DATABASE_URI
+    # 和 SQLALCHEMY_TRACK_MODIFICATIONS
+    app.config.from_object(DevelopConfig)
+
+    # flask-sqlalchemy
+    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
+    # app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:1234@localhost:3306/day041905'
+    # 注意 init_app方法 一定要在初始化参数的下面
+    # 如果报错SQLALCHEMY_TRACK_MODIFICATIONS  那么要么是单词写错 要么是初始化没有在init_app方法之上
     db.init_app(app=app)
     # flask-migrate
     migrate = Migrate()
@@ -190,20 +192,16 @@ pip install flask-migrate
    		  	不能生成有 2 中情况：
    		  	(1) 模型定义完成从未调用
    		  	(2) 数据库已经有模型记录
-   		  	解决方法：drop 所有tables
+   		  	解决方法：删除库中已经存在的所有表
+   		  	drop table;
    3 upgrade 	升级，执行迁移文件
    4 downgrade 降级，撤销前面生成的表
    扩展：创建用户文件(给迁移文件添加自己的后缀名)
    python manager.py db -message '创建用户'
+   注意：如果之前没有migrations的文件夹 那么必须先init，但是如果有这个文件夹 那么就不需要init了。
    ```
 
-   ```tex
-   如果之前没有migrations的文件夹 那么必须先init，但是如果有这个文件夹 那么就不需要init了
-       python manager.py db init
-       python manager.py db migrate
-       python manager.py db upgrade
-       python manager.py db downgrade
-   ```
+
 
 ## 三、DML
 
@@ -304,9 +302,9 @@ def getOne():
     # 注意没有last方法
     # s1 = Student.query.last()
     # print(s1.name,s1.age)
-    s1 = Student.query.get(2)
-    print(type(s1))
-    print(s1.name,s1.age)
+    s2 = Student.query.get(2)
+    print(type(s2))
+    print(s2.name,s2.age)
 
     return '查询成功'
 ```
@@ -317,7 +315,7 @@ def getOne():
 
 ```python
 （1）xxx.query.all   
- persons = Person.query.all()
+ 	persons = Person.query.all()
 	返回的列表的类型
 （2）xxx.query.filter_by
 	persons = Person.query.filter_by(p_age=15)
@@ -369,6 +367,7 @@ def getResult():
 ```
 
 ```tex
+扩展：
 (1) user = User.query.get(id=3)
     print(user.name)
 
@@ -420,23 +419,53 @@ def getResult():
     persons = Person.query.paginate(page_num, page_per, False).items
 ```
 
+```python
+# ===============================
+# 分页原生代码
+#  一页有几条数据  page_per/pagesize    第几页  page
+@blue.route('/getPage/')
+def getPage():
+    page = int(request.args.get('page'))
+    page_per = int(request.args.get('page_per'))
+
+    # 1页  2  0   (1-1)*2
+    # 2页  2  2   (2-1)*2
+    # 3页  2  4   (3-1)*4
+    student_list = Student.query.limit(page_per).offset((page-1)*page_per)
+    for student in student_list:
+        print(student.id,student.name,student.age)
+# ================================
+# 分页封装
+@blue.route('/getPageFz/')
+def getPageFz():
+
+    pagination = Song.query.paginate(page=1,per_page=5).items
+
+    for p in pagination:
+        print(p.name)
+
+    return '分页成功'
+```
+
 
 
 #### 5.逻辑运算
 
 ```python
 （1）与and_     filter(and_(条件))
-huochelist = kaihuoche.query.filter(and_(kaihuoche.id == 1,kaihuoche.name == 'lc'))
+song = Song.query.filter(and_(Song.id==1,Song.name=='晴天'))[0]
 
 （2）或or_      filter(or_(条件))
-huochelist = kaihuoche.query.filter(or_(kaihuoche.id == 1,kaihuoche.name =='lc'))
+song = Song.query.filter(or_(Song.id == 1,Song.name=='香水有毒'))[0]
 
 （3）非not_     filter(not_(条件))  注意条件只能有一个
-huochelist = kaihuoche.query.filter(not_(kaihuoche.id == 1))
-
+songs = Song.query.filter(not_(Song.name == '香水有毒'))
+for song in songs:
+    print(song.id,song.name)
 （4）in
-huochelist = kaihuoche.query.filter(kaihuoche.id.in_([1,2,4]))
-
+songs = Song.query.filter(Song.id.in_([1,2,3,4]))
+for song in songs:
+    print(song.id,song.name)
 ```
 
 
@@ -455,17 +484,15 @@ huochelist = kaihuoche.query.filter(kaihuoche.id.in_([1,2,4]))
     unique        （唯一） 			
     default       （默认）   			
     index         （索引）    			
-    no't'null     （非空）			
+    nullable      （非空）			
     ForeignKey    （外键）                       
         用来约束级联数据
-        db.Column( db.Integer, db.ForeignKey(xxx.id) )
+        db.Column( db.Integer, db.ForeignKey=True )
         使用relationship实现级联数据获取
         声明级联数据
         backref="表名"
         lazy=True
 ```
-
-
 
 ### 6、模型关系
 
@@ -477,71 +504,148 @@ class Parent(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     name=db.Column(db.String(30),unique=True)
     children=db.relationship("Child",backref="parent",lazy=True)
-    def __init__(self):
-        name=self.name
+    
 
 class Child(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
-    def __init__(self):
-        name = self.name
 ```
 
 
 
 ```python
- （2）参数介绍:
-        1.relationship函数
-        sqlalchemy对关系之间提供的一种便利的调用方式，关联不同的表；
-        2.backref参数
-        对关系提供反向引用的声明，在Address类上声明新属性的简单方法，之后可以在my_address.person来获取这个地址的person；
-        3.lazy参数
-        （1）'select'（默认值）
-        SQLAlchemy 会在使用一个标准 select 语句时一次性加载数据；
-        （2）'joined'
-        让 SQLAlchemy 当父级使用 JOIN 语句是，在相同的查询中加载关系；
-        （3）'subquery'
-        类似 'joined' ，但是 SQLAlchemy 会使用子查询；
-        （4）'dynamic'：
-        SQLAlchemy 会返回一个查询对象，在加载这些条目时才进行加载数据，大批量数据查询处理时推荐使用。
-        4.ForeignKey参数
-        代表一种关联字段，将两张表进行关联的方式，表示一个person的外键，设定上必须要能在父表中找到对应的id值
+（2）参数介绍:
+1.relationship函数
+    sqlalchemy对关系之间提供的一种便利的调用方式，关联不同的表；
+2.backref参数
+    对关系提供反向引用的声明，在Address类上声明新属性的简单方法，之后可以在my_address.person来获取这个地址的person；
+3.lazy参数
+    （1）'select'（默认值）
+	SQLAlchemy 会在使用一个标准 select 语句时一次性加载数据；
+    （2）'joined'
+    让 SQLAlchemy 当父级使用 JOIN 语句是，在相同的查询中加载关系；
+    （3）'subquery'
+    类似 'joined' ，但是 SQLAlchemy 会使用子查询；
+    （4）'dynamic'：
+    SQLAlchemy 会返回一个查询对象，在加载这些条目时才进行加载数据，大批量数据查询处理时推荐使用。
+4.ForeignKey参数
+    代表一种关联字段，将两张表进行关联的方式，表示一个person的外键，设定上必须要能在父表中找到对应的id值
 ```
 
 ```python
-（3）模型的应用
-添加
-eg：@blue.route('/add/')
-def add():
-    p = Parent()
-    p.name = '张三'
-    c = Child()
-    c.name = '张四'
-    c1 = Child()
-    c1.name = '王五'
-    p.children = [c,c1]
+（3）模型应用
+# 一对多
+# 添加
+@blue.route('/addParent/')
+def addParent():
+    parent = Parent()
+    parent.name = '张三'
 
-    db.session.add(p)
+
+    child = Child()
+    child.name = '张四'
+
+    child1 = Child()
+    child1.name = '王五'
+
+    child_list = [child,child1]
+
+    parent.children = child_list
+
+    db.session.add(parent)
     db.session.commit()
 
-    return 'add success'
-查
-eg:
-    主查从 --> Parent-->Child
-    @blue.route('/getChild/')
-    def getChild():
-        clist = Child.query.filter(Parent.id == 1)
-        for c in clist:
-            print(c.name)
-            return 'welcome to red remonce'
-        从查主
-        @blue.route('/getParent/')
-        def getParent():
-            p = Parent.query.filter(Child.id == 2)
-            print(type(p))
-            print(p[0].name)
-            return '开洗'
+    return '添加成功'
+
+
+# 查询  应用级
+# 主查从    给你一个parent  然后查询child的孩子
+@blue.route('/getChild/')
+def getChild():
+    childs = Child.query.filter(Parent.id == 1)
+
+    for child in childs:
+        print(child.name)
+
+    return '查询成功了兄弟'
+
+# 从查主    给一个child  查询parent
+@blue.route('/getParent/')
+def getParent():
+
+    parent = Parent.query.filter(Child.id == 1)[0]
+    print(parent.name)
+
+    return '查询成功了兄弟'
+
+
+
+
+# class Parent(db.Model):
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     name = db.Column(db.String(30), unique=True)
+#
+# class Child(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(30), unique=True)
+#     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
+
+
+# 如果不加relationship
+# 查询 给主表数据 然后查询从表数据
+@blue.route('/getChild1/')
+def getChild1():
+    parent = Parent.query.filter(Parent.id == 1)[0]
+    childs = Child.query.filter(Child.parent_id == parent.id)
+    for child in childs:
+        print(child.name)
+
+    return '查询成功'
+
+
+
+# class Parent(db.Model):
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     name = db.Column(db.String(30), unique=True)
+#     children = db.relationship("Child")
+#
+# class Child(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(30), unique=True)
+#
+#     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
+
+# 加relationship
+@blue.route('/getChild2/')
+def getChild2():
+    parent = Parent.query.filter(Parent.id == 1)[0]
+    childs = parent.children
+    for child in childs:
+        print(child.name)
+
+    return '查询成功'
+
+
+# class Parent(db.Model):
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     name = db.Column(db.String(30), unique=True)
+#
+#     children = db.relationship("Child", backref="parent", lazy=True)
+#
+#
+# class Child(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(30), unique=True)
+#
+#     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
+
+# 加backref
+@blue.route('/getParent1/')
+def getParent1():
+    child = Child.query.filter(Child.id == 1)[0]
+    print(child.parent.name)
+    return '查询成功'
 ```
 
 
@@ -549,7 +653,19 @@ eg:
 #### 2.一对一
 
 ```python
- 一对一需要设置relationship中的uselist=Flase，其他数据库操作一样。
+# 一对一需要设置relationship中的uselist=Flase，其他数据库操作一样。
+#     一对一  和 一对多所有的使用方式 完全一致
+class User(db.Model):
+    id = db.Column(db.Integer,primary_key=True,autoincrement=True)
+    name = db.Column(db.String(32))
+    # uselist=False 是在模型执行的时候  会验证 从表中是否有重复的数据
+    address = db.relationship('Address',backref='user',lazy=True,uselist=False)
+
+
+class Address(db.Model):
+    id = db.Column(db.Integer,primary_key=True,autoincrement=True)
+    name = db.Column(db.String(32))
+    user_id = db.Column(db.ForeignKey('user.id'))
 ```
 
 
@@ -575,26 +691,93 @@ class Collection(db.Model):
 
 ```python
 （2）应用场景
-购物车添加
-@blue.route('/getcollection/')
-def getcollection():
+# 多对多
+class User1(db.Model):
+    id = db.Column(db.Integer,primary_key=True,autoincrement=True)
+    name = db.Column(db.String(32))
+
+
+class Movie(db.Model):
+    id = db.Column(db.Integer,primary_key=True,autoincrement=True)
+    name = db.Column(db.String(32))
+
+
+class Collection(db.Model):
+    id = db.Column(db.Integer,primary_key=True,autoincrement=True)
+
+    u_id = db.Column(db.ForeignKey(User1.id))
+    m_id = db.Column(db.ForeignKey(Movie.id))
+
+    num = db.Column(db.Integer,default=1)
+
+
+class Movie1(db.Model):
+    id = db.Column(db.Integer,primary_key=True,autoincrement=True)
+    name = db.Column(db.String(32))
+    # 导演
+    director = db.Column(db.String(32))
+    # 领衔主演
+    starring = db.Column(db.String(128))
+    # 上映时间
+    showtime = db.Column(db.String(128))
+    # 简介
+    brief = db.Column(db.String(256))
+    # 时长
+    duration = db.Column(db.String(128))
+```
+
+**count方法判断BaseQuery对象是否有数据，因为查询BaseQuery对象不会报错**
+
+```python
+# 多对多
+# 需求：第一次会插入到数据库   第二次会在原来的基础之后 数量加1
+
+
+@blue.route('/addCollection/')
+def addCollection():
     u_id = int(request.args.get('u_id'))
     m_id = int(request.args.get('m_id'))
-    c = Collection.query.filter(Collection.u_id == u_id).filter_by(m_id = m_id)
 
-    if c.count() > 0:
-        print(c.first().u_id,c.first().m_id)
-        # print(c)
-        # print(type(c))
-        # print('i am if')
-        return '已经添加到了购物车中'
+    collections = Collection.query.filter(Collection.u_id == u_id).filter(Collection.m_id == m_id)
+
+    # collection.count() 获取basequery的元素长度
+    if collections.count() > 0:
+        collection = collections[0]
+        collection.num = collection.num + 1
+        print(1111)
     else:
-        c1 = Collection()
-        c1.u_id = u_id
-        c1.m_id = m_id
-        db.session.add(c1)
-        db.session.commit()
-        return 'ok'
+        collection = Collection()
+        collection.u_id = u_id
+        collection.m_id = m_id
+        print(2222)
+    db.session.add(collection)
+    db.session.commit()
+
+
+    return '添加成功'
+
+# ============================
+# flask-bootstrap
+# <head>
+#       head
+#             title
+#             metas
+#             styles
+
+# <body>
+#        body
+#            navbar
+#            content
+#            script
+
+@blue.route('/bootstrapDemo/')
+def bootstrapDemo():
+    page = int(request.args.get('page',1))
+    per_page = request.args.get('per_page',5)
+
+    pagination = Movie1.query.paginate(page=page,per_page=per_page)
+
+    return render_template('bootstrapDemo.html',pagination=pagination,page=page)
 ```
 
 
@@ -602,4 +785,5 @@ def getcollection():
 
 
    
+
 
