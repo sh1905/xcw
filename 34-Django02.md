@@ -11,14 +11,14 @@
 'PORT':端口号  # 注意：加不加引号 '' 都可以
 ```
 
-```tex
+```python
 注意迁移时的驱动问题：
 (1)mysqlclient:python2/3都能直接使用，致命缺点-对安装有要求，必须制定位置存在配置文件
 (2)mysql-python: - python2 支持很好，- python3不支持。
 (3)pymysql: 会伪装成mysqlclient和mysql-python;
 python2, python3都支持：
------------------------------
-在项目目录下init中书写：
+# -----------------------------
+注意：在项目目录下init中书写
 import pymysql
 pymysql.install_as_mysqldb()
 ```
@@ -81,7 +81,7 @@ for student in students:
           s_name =models.CharField(max_length=16)
           s_grade=models.ForeignKey(Grade)
 案例：
-(1)多获取一方，根据学生找班级名字 
+(1)多获取一方，根据学生找班级名字  
 显性属性：就是你可以在类中直接观察到的属性---->通过多方获取一方，那么可以使用使用多方调用显性属性直接获取一方数据。
     student = Student.objects.get(pk=2)
     grade = student.s_grade
@@ -289,8 +289,8 @@ def testFilter(request):
 
 ```tex
 （1）创建对象1   常用
-	person = Person（） 
-	person.name='zs' 
+	person = Person（）   
+	person.name='zs'  
 	person.age=18
 （2）创建对象2
     直接实例化对象，设置属性
@@ -305,7 +305,7 @@ def testFilter(request):
 （4）创建对象4
     注意:__init__已经在父类models.Model中使用，在自定义的模型中无法使用
     在模型类中增加类方法去创建对象
-    @classmethod 
+    @classmethod  
     def create(cls,name,age=100):
         return cls(name=name,age=age)
     --------------------------
@@ -352,9 +352,10 @@ class Person(models.Model):
 
 ## 九、查询集
 
-* 查询集：表示从数据库获取的对象集合，查询集可以有多个过滤器。
+- 查询集：表示从数据库获取的对象集合，查询集可以有多个过滤器。
+- 过滤器：过滤器就是一个函数，基于所给的参数限制查询集结果，返回查询集的方法称为过滤器。
 
-* 过滤器：过滤器就是一个函数，基于所给的参数限制查询集结果，返回查询集的方法称为过滤器。
+### 查询集：
 
 ```tex
 查询经过过滤器筛选后返回新的查询集，所以可以写成链式调用。
@@ -372,23 +373,23 @@ class Person(models.Model):
         
 5 values
     persons= Person.objects.order_by('id') persons.values()
-    注意方法的返回值类型 
+    注意方法的返回值类型是字典，必须使用get方法通过键来查询值 
 6 切片
     限制查询集，可以使用下标的方法进行限制
     左闭右开区间: 不支持负数
     下标没有负数: 实际上相当于 limit  offset
     
-    studentList = Student.objects.all()[0:5] 
+    studentList = Student.objects.all()[0:5]  
     第一个参数是offset  第二个参数是limit
     
-    (1)懒查询/缓存集
+    (1)缓存集：
         - 查询集的缓存：每个查询集都包含一个缓存，来最小化对数据库的访问;
         - 在新建的查询集中，缓存首次为空，
           第一次对查询集求值，会发生数据缓存，django会将查询出来的数据做一个缓存，并返回查询结果，
           以后的查询直接使用查询集的缓存。
         - 都不会真正的去查询数据库。
 
-    (2)懒查询
+    (2)懒查询：
         - 只有我们在迭代结果集(for 循环遍历)，或者获取单个对象属性(student.name)的时候，它才会去查询数据
         - 为了优化我们结果和查询
 ```
@@ -443,11 +444,7 @@ def testFilter1(request):
     return HttpResponse('查询成功')
 ```
 
-
-
-
-
-* 获取单个对象：
+### 获取单个对象：
 
 ```tex
 1 get
@@ -510,11 +507,10 @@ def getOne(request):
     return HttpResponse('查询成功')
 ```
 
-
-
-* 字段查询：**对sql中where的实现，作为方法`filter(),exclude(),get()`的参数**
+### 字段查询：
 
 ```tex
+含义：对sql中where的实现，作为方法filter(),exclude(),get()的参数；
 语法：属性名称__比较运算符=值
     Person.objects.filter(p_age__gt=18)
 条件： 属性__操作符=临界值
@@ -541,7 +537,7 @@ def getOne(request):
         以上四个在运算符前加上 i(ignore)就不区分大小写了 iexact...
 ```
 
-* 时间
+### 时间：
 
 ```python
 models.DateTimeField(auto_now_add=True)
@@ -585,7 +581,7 @@ class Order(models.Model):
         db_table = 'order'
 ```
 
-
+### 聚合函数：
 
 ```tex
 注意：mysql、oracle中所说的聚合函数、多行函数 、组函数 都是一个东西：max min avg sum count
@@ -626,5 +622,58 @@ def testAggr(request):
     avg_cost = Custom.objects.aggregate(Avg('cost'))
     print(avg_cost)
     return HttpResponse('查询成功')
+```
+
+### 跨关系查询：
+
+```tex
+跨关系查询:
+	模型：
+		class Grade(models.Model):
+    		g_name = models.CharField(max_length=16)
+        class Student(models.Model):
+            s_name = models.CharField(max_length=16)
+            s_grade = models.ForeignKey(Grade)
+    使用：
+        模型类名__属性名__比较运算符，实际上就是处理的数据库中的join
+        Grade  ---g_name      Student---》s_name  s_grade（外键)
+        gf = Student.objects.filter(name='凤姐')
+        print(gf[0].s_grade.name)
+        grades = Grade.objects.filter(student__s_name='Jack')
+        查询jack所在的班级
+```
+
+### F对象：
+
+```python
+F对象 eg：常适用于表内属性的值的比较
+	模型：
+		class Company(models.Model):
+              c_name = models.CharField(max_length=16)
+              c_gril_num = models.IntegerField(default=5)
+              c_boy_num = models.IntegerField(default=3)
+	F：
+		获取字段信息，通常用在模型的自我属性比较，支持算术运算
+	eg:男生比女生少的公司
+	companies = Company.objects.filter(c_boy_num__lt=F('c_gril_num'))
+	eg:女生比男生多15个人
+	companies = Company.objects.filter(c_boy_num__lt=F('c_gril_num')-15)
+```
+
+### Q对象：
+
+```python
+Q对象 eg：常适用于逻辑运算 与或或
+		年龄小于25：
+            Student.objects.filter(Q(sage__lt=25))
+        eg:男生人数多余5 女生人数多于10个：
+             companies = Company.objects.filter(c_boy_num__gt=1).filter(c_gril_num__gt=5)
+             companies = Company.objects.filter(Q(c_boy_num__gt=5)|Q(c_gril_num__gt=10))
+        支持逻辑运算：
+                    & 与
+                    | 或
+                    ~ 非
+        年龄大于等于的：
+					Student.objects.filter(~Q(sage__lt=25))
 ```
 
