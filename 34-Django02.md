@@ -1,9 +1,8 @@
 ## 一、修改数据库
 
-### 在settings.py中的DATABASE中进行修改
-
 ```python
-'ENGINE':'django.db.backends.mysql',
+1.在settings.py中的DATABASE中进行修改:
+'ENGINE':'django.db.backends.mysql',# 引擎
 'NAME':数据库名,
 'USE':用户名,
 'PASSWORD':密码,
@@ -12,13 +11,13 @@
 ```
 
 ```python
-注意迁移时的驱动问题：
+2.注意迁移时的驱动问题：
 (1)mysqlclient:python2/3都能直接使用，致命缺点-对安装有要求，必须制定位置存在配置文件
 (2)mysql-python: - python2 支持很好，- python3不支持。
 (3)pymysql: 会伪装成mysqlclient和mysql-python;
 python2, python3都支持：
-# -----------------------------
 注意：在项目目录下init中书写
+# -----------------------------
 import pymysql
 pymysql.install_as_mysqldb()
 ```
@@ -48,7 +47,7 @@ pymysql.install_as_mysqldb()
 		创建对象进行save()
 	数据查询
 		模型.objects.all()
-		模型.objects.get(pk=2) （pk:primarykey）
+		模型.objects.get(pk=2) （pk:primary key）
 	更新
 		基于查询
 		save()
@@ -153,14 +152,12 @@ class Meta:
 
 ```tex
 1 字段类型：
--CharField(max_length=字符长度)
+(1)CharField(max_length=字符长度)
 	字符串，默认的表单样式是 TextInput
--TextField
+(2)TextField
 	大文本字段，一般超过4000使用，默认的表单控件是Textarea
-
--IntegerField  整数
-
--DecimalField(max_digits=None, decimal_places=None)
+(3)IntegerField  整数
+(4)DecimalField(max_digits=None, decimal_places=None)
     ·使用python的Decimal实例表示的十进制浮点数
     ·参数说明
         ·DecimalField.max_digits
@@ -168,16 +165,16 @@ class Meta:
         ·DecimalField.decimal_places
         ·小数点后的数字位数
 
--FloatField
+(5)FloatField
 	用Python的float实例来表示的浮点数
 
--BooleanField
+(6)BooleanField
 	true/false 字段，此字段的默认表单控制是CheckboxInput
 
--NullBooleanField
+(7)NullBooleanField
 	支持null、true、false三种值
 
--DateField([auto_now=False, auto_now_add=False])
+(8)DateField([auto_now=False, auto_now_add=False])
     ·使用Python的datetime.date实例表示的日期
     ·参数说明
         ·DateField.auto_now
@@ -195,44 +192,44 @@ class Meta:
             ·auto_now_add, auto_now, and default 这些设置是相互排斥的，
             他们之间的任何组合将会发生错误的结果
 
--TimeField
+(9)TimeField
 	·使用Python的datetime.time实例表示的时间，参数同DateField
 
--DateTimeField
+(10)DateTimeField
 	·使用Python的datetime.datetime实例表示的日期和时间，参数同DateField
 
--FileField
+(11)FileField
 	·一个上传文件的字段
 
--ImageField
+(12)ImageField
 	·继承了FileField的所有属性和方法，但对上传的对象进行校验，确保它是个有效的image
 ------------------------------------------
 2 字段选项
     ·概述
     ·通过字段选项，可以实现对字段的约束
     ·在字段对象时通过关键字参数指定
--null
+(1)null
 	·如果为True，Django 将空值以NULL 存储到数据库中，默认值是 False
--blank
+(2)blank
 	·如果为True，则该字段允许为空白，默认值是 False
         ·注意
         ·null是数据库范畴的概念，blank是表单验证证范畴的
--db_column
+(3)db_column
 	·字段的名称，如果未指定，则使用属性的名称
--db_index
+(4)db_index
 	·若值为 True, 则在表中会为此字段创建索引
--default
+(5)default
 	·默认值
--primary_key
+(6)primary_key
 	·若为 True, 则该字段会成为模型的主键字段
--unique
+(7)unique
 	·如果为 True, 这个字段在表中必须有唯一值
 ```
 
 ```tex
-逻辑删除
+逻辑删除:
     ·对于重要数据都做逻辑删除，不做物理删除，
-    实现方法是定义isDelete属性，类型为BooleanField，默认值为False
+    ·实现方法是定义isDelete属性，类型为BooleanField，默认值为False
 ```
 
 ## 七、模型过滤（查询）
@@ -259,7 +256,6 @@ def testFilter(request):
 
     # exclude
     # persons = Person.objects.exclude(age=12)
-    #
     # for person in persons:
     #     print(person.id,person.name,person.age)
 
@@ -285,7 +281,7 @@ def testFilter(request):
 
 
 
-## 八、创建对象的方式
+## 八、创建对象的方式（四种）
 
 ```tex
 （1）创建对象1   常用
@@ -337,12 +333,8 @@ def createObject(request):
 class Person(models.Model):
     name = models.CharField(max_length=32)
     age = models.IntegerField()
-
-
     class Meta:
         db_table = 'person'
-
-
     @classmethod
     def create(cls,name,age=19):
         return cls(name=name,age=age)
@@ -509,7 +501,7 @@ def getOne(request):
 
 ### 字段查询：
 
-```tex
+```python
 含义：对sql中where的实现，作为方法filter(),exclude(),get()的参数；
 语法：属性名称__比较运算符=值
     Person.objects.filter(p_age__gt=18)
@@ -540,16 +532,18 @@ def getOne(request):
 ### 时间：
 
 ```python
+# 模型定义
 models.DateTimeField(auto_now_add=True)
 	year
-	month 会出现时区问题  需要在settings中的USE-TZ中设置为 False
+	month 会出现时区问题  需要在settings中设置：USE-TZ = False
 	day
 	week_day
 	hour
 	minute
 	second
+# 查询：
 orders = Order.objects.filter(o_time__month=9)
-有坑：时区问题
+# 有坑：时区问题
     关闭django项目下settings中自定义的时区
     	USE-TZ=False
     在数据库中创建对应的时区表
@@ -626,7 +620,7 @@ def testAggr(request):
 
 ### 跨关系查询：
 
-```tex
+```python
 跨关系查询:
 	模型：
 		class Grade(models.Model):
@@ -635,25 +629,25 @@ def testAggr(request):
             s_name = models.CharField(max_length=16)
             s_grade = models.ForeignKey(Grade)
     使用：
-        模型类名__属性名__比较运算符，实际上就是处理的数据库中的join
-        Grade  ---g_name      Student---》s_name  s_grade（外键)
+        模型类名__属性名__比较运算符    实际上就是处理的数据库中的join
+            Grade  ---> g_name      
+            Student---> s_name  s_grade（外键）
         gf = Student.objects.filter(name='凤姐')
         print(gf[0].s_grade.name)
-        grades = Grade.objects.filter(student__s_name='Jack')
         查询jack所在的班级
+        grades = Grade.objects.filter(student__s_name='Jack')
 ```
 
 ### F对象：
 
 ```python
-F对象 eg：常适用于表内属性的值的比较
+F对象:常适用于表内属性的值的比较
 	模型：
 		class Company(models.Model):
               c_name = models.CharField(max_length=16)
               c_gril_num = models.IntegerField(default=5)
               c_boy_num = models.IntegerField(default=3)
-	F：
-		获取字段信息，通常用在模型的自我属性比较，支持算术运算
+	F：获取字段信息，通常用在模型的自我属性比较，支持算术运算
 	eg:男生比女生少的公司
 	companies = Company.objects.filter(c_boy_num__lt=F('c_gril_num'))
 	eg:女生比男生多15个人
@@ -663,17 +657,17 @@ F对象 eg：常适用于表内属性的值的比较
 ### Q对象：
 
 ```python
-Q对象 eg：常适用于逻辑运算 与或或
-		年龄小于25：
-            Student.objects.filter(Q(sage__lt=25))
-        eg:男生人数多余5 女生人数多于10个：
-             companies = Company.objects.filter(c_boy_num__gt=1).filter(c_gril_num__gt=5)
-             companies = Company.objects.filter(Q(c_boy_num__gt=5)|Q(c_gril_num__gt=10))
-        支持逻辑运算：
-                    & 与
-                    | 或
-                    ~ 非
-        年龄大于等于的：
-					Student.objects.filter(~Q(sage__lt=25))
+Q对象:常适用于逻辑运算 与或非
+    支持逻辑运算：
+            & 与
+            | 或
+            ~ 非
+    年龄小于25：
+    	Student.objects.filter(Q(sage__lt=25))
+    男生人数多余5 女生人数多于10个：
+        companies = Company.objects.filter(c_boy_num__gt=1).filter(c_gril_num__gt=5)
+        companies = Company.objects.filter(Q(c_boy_num__gt=5)|Q(c_gril_num__gt=10)       
+	年龄大于等于的：
+		Student.objects.filter(~Q(sage__lt=25))
 ```
 
