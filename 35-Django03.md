@@ -2,7 +2,7 @@
 
 ```tex
 1 概念：在Django框架中，模板是可以帮助开发者快速生成，呈现给用户页面的工具。
-2 模板的设计方式实现了我们了我们MVT中的解耦，VT有着N:M的关系，一个V可以调用任意T，一个T可以供任意V使用。
+2 模板的设计方式实现了MVT中的解耦，VT有着N:M的关系，一个V可以调用任意T，一个T可以供任意V使用。
 3 模板处理分为两个进程
 	（1）加载
 	（2）渲染
@@ -42,8 +42,8 @@ class Student(models.Model):
 # 弊端：模板中的小弊端，调用对象的方法，不能传递参数; 
 # 为什么不能传递参数 ，因为连括号都没有,无法用括号来调用。
 1 属性  student.name
-2 方法  student.getname
-3 索引  students.0.gname
+2 方法  student.getName
+3 索引  students.0.g_name
 4 字典  student_dict.hobby
 ```
 
