@@ -1,12 +1,29 @@
+```tex
+pip
+	python的安装目录/lib/python3.6/site-packags
+apt
+	1.下载的软件存放位置
+     /var/cache/apt/archives
+	2.安装后软件默认位置
+     /usr/share
+	3.可执行文件位置 
+     /usr/bin
+	4.配置文件位置
+     /etc
+	5.lib文件位置
+     /usr/lib
+所有文件: `.` === `./`
+```
+
 ## 一、MVC网站框架
 
-![1568203836723](./images/1568203836723.png)
+![](/media/xcw/Acer/Users/Acer/AppData/Roaming/Typora/typora-user-images/1568203836723.png)
 
 MVC模式（Model-View-Contraller）是软件工程中的一种软件架构模式，把软件系统分为三个部分：
 
-* **模型**（Model），它是程序需要操作的数据或信息。
-* **视图**（View)，它提供给用户的操作界面，是程序的外壳。
-* **控制器**（Contraller）,它负责用户“视图层”输入的指令，选取“数据层”中的数据，然后对其进行相应的操作，产生最终的结果。
+- **模型**（Model），它是程序需要操作的数据或信息。
+- **视图**（View)，它提供给用户的操作界面，是程序的外壳。
+- **控制器**（Contraller）,它负责用户“视图层”输入的指令，选取“数据层”中的数据，然后对其进行相应的操作，产生最终的结果。
 
 **特点：**构件简单，层次清晰，代码可复用性好，模块之间耦合度低。
 
@@ -65,7 +82,7 @@ project/
    ```bash
    deactivate # 开发完成后，退出虚拟环境
    ```
-   
+
 5. 导出虚拟环境的软件包
 
    ```shell
@@ -91,17 +108,17 @@ project/
 
 ### 常见的版本控制工具
 
-* CSV：基本退出历史舞台
-* SVN：中心化的版本控制工具，需要有一台中心服务器
+- CSV：基本退出历史舞台
+- SVN：中心化的版本控制工具，需要有一台中心服务器
 
-![1568250490883](./images/1568250490883.png)
+![1568250490883](C:\Users\Acer\AppData\Roaming\Typora\typora-user-images\1568250490883.png)
 
-* Git：分布式的版本控制工具，中心服务器不再是必需的
+- Git：分布式的版本控制工具，中心服务器不再是必需的
 
-![1568250528775](./images/1568250528775.png)
+![1568250528775](C:\Users\Acer\AppData\Roaming\Typora\typora-user-images\1568250528775.png)
 
-* hg：纯Python开发的版本控制工具
-* GitHub：依托Git而创建的一个平台，有独立的公司在运作。
+- hg：纯Python开发的版本控制工具
+- GitHub：依托Git而创建的一个平台，有独立的公司在运作。
 
 **备注**：所有的文本类的东西都可以交由版本控制工具来管理。
 
@@ -136,50 +153,47 @@ touch .gitignore
 __pycache__/
 ```
 
-3.`git init` ：对仓库进行初始化，产生一个 `.git`的隐藏目录，这个文件夹就是本地仓库。
+#### 3.常见步骤
 
-4.`git add ./`：将当前文件夹下的所有文件添加到`暂存区`。
+1、`git init` ：对仓库进行初始化，产生一个 `.git`的隐藏目录，这个文件夹就是本地仓库。
 
-5.`git reset __pycache__ `：将  `暂存区`  中的文件取消暂存状态。
+2、`git add ./`：将当前文件夹下的所有文件添加到`暂存区`。
 
-6.`git commit -m '说明'` ：将 `暂存区` 中的代码提交到本地代码。
+3、`git reset __pycache__ `：将  `暂存区`  中的文件取消暂存状态。
 
-7.从命令行推送本地仓库到服务器
+4、`git commit -m '说明'` ：将 `暂存区` 中的代码提交到本地代码。
 
-* `git remote add origin git@githubgithub.com/xcw-user/day3.git`：建立远程仓库连接；
+5、从命令行推送本地仓库到服务器
 
-* `git push -u origin master`： 第一次push的话，要加上 -u 在语句里，把本地master分支和远程库的master分支关联起来。
-* `git push`：第二次推送；
+- `git remote add origin git@github.com/xcw-user/day3.git`：建立远程仓库连接；`cat .git/config`本地配置文件多出几行；
+- `git push -u origin master`： 第一次push的话，要加上 -u 在语句里，把本地master分支和远程库的master分支关联起来。
+- `git push`：第二次推送；
 
-8.实现免密登录
+6、实现免密登录
 
-* `ssh-keygen`    在`~/.ssh`目录下生成一对公钥和秘钥。
+- `ssh-keygen`    在`~/.ssh`目录下生成一对公钥和秘钥。
+- 将公钥内容`cat id_rsa.pub`复制到GitHub的设置SSH and GPG keys。
 
-* 将公钥内容`cat id_rsa.pub`复制到GitHub的设置SSH and GPG keys。
-
-9.第一次操作，将整个远程仓库拉取到本地：
+7、第一次操作，将整个远程仓库拉取到本地：
 
 `git clone git@github.com:xcw-user/day3.git`
 
-10.`git pull` ：将远程仓库的部分更新拉取到本地。
+8、`git pull` ：将远程仓库的部分更新拉取到本地。
 
-11.**文件还原**
+9、**文件还原**
 
-* `git checkout 版本ID` 回滚到历史版本`git log 查看`
+- `git checkout 版本ID` 回滚到历史版本`git log 查看`
+- `git checkout master`  回滚到最新版本
+- `git checkout 文件名` 还原文件(尚未add提交且未添加到暂存区,红色字体)
+- `git reset` + `git checkout 文件名` 还原处于暂存区的文件
 
-* `git checkout master`  回滚到最新版本
+10、**解决冲突**
 
-* `git checkout 文件名` 还原文件(尚未add提交且未添加到暂存区,红色字体)
-
-* `git reset` + `git checkout 文件名` 还原处于暂存区的文件
-
-12.**解决冲突**
-
-* `git push` 发现与别人修改的代码有冲突；
-* `git pull` 将线上代码拉取到本地；
-* `git status` 找到冲突文件都有哪些，冲突文件状态：**both modifyied**
-* 逐一打开冲突文件，逐行解决冲突；
-* 冲突代码解决后，将代码中冲突的标记删除；
+- `git push` 发现与别人修改的代码有冲突；
+- `git pull` 将线上代码拉取到本地；
+- `git status` 找到冲突文件都有哪些，冲突文件状态：**both modifyied**
+- 逐一打开冲突文件，逐行解决冲突；
+- 冲突代码解决后，将代码中冲突的标记删除；
 
 ```python
 # 冲突标记
@@ -190,54 +204,40 @@ print('hello python')
 <<<<<< 版本ID
 ```
 
-* `git add ./`
-* `git commit -m '解决冲突，进行了一次合并'`
-* `git push ` 最后重新推送。
+- `git add ./`
+- `git commit -m '解决冲突，进行了一次合并'`
+- `git push ` 最后重新推送。
 
-13.**分支**
+11、**分支**
 
-* `git branch 分支名`：创建新分支   
-  * `git checkout 分支名`：切换到新创建的分支
-    * 等价于`git checkout -b 分支名`：切换到新创建的分支(不存在则创建)
-* `git push --set-upstream origin 分支名`：指定推送的分支的上流主支，等价于`git push -u origin 分支名`；
-*  `git checkout -`：切换到上一分支(master)
-* `git merge 分支名` ：合并分支到master
+- `git branch 分支名`：创建新分支   
+  - `git checkout 分支名`：切换到新创建的分支
+    - 等价于`git checkout -b 分支名`：切换到新创建的分支(不存在则创建)
+- `git push --set-upstream origin 分支名`：指定推送的分支的上流主支，等价于`git push -u origin 分支名`；
+- `git checkout -`：切换到上一分支(master)
+- `git merge 分支名` ：先切换到master,合并分支到master
 
 ### 2、Git命令
 
-| Command  | Description                      | 与远程通信 | 实例                                         |
-| -------- | -------------------------------- | :--------: | -------------------------------------------- |
-| init     | 在本地初始化一个新的仓库         |     /      | `git init`                                   |
-| add      | 添加到暂存区                     |     /      | `git add  aaa bbb ccc/`                      |
-| commit   | 将暂存区的修改提交到本地仓库     |     /      | `git commit -m '注释'`                       |
-| push     | 将本地仓库的内容推送到远程仓库   |     有     | `git push`                                   |
-| pull     | 将远程仓库的更新拉取到本地仓库   |     有     | `git pull`                                   |
-| clone    | 将远程仓库克隆到本地             |     有     | `git clone git@github.com:xcw-user/day3.git` |
-| branch   | 管理分支(-d删除)                 |     /      | `git branch`                                 |
-| checkout | 切换分支/代码回滚/代码还原       |     /      | `git checkout 分支名 / 版本ID`               |
-| diff     | 不同版本之间进行差异对比         |     /      | `git diff 版本1 版本2`                       |
-| merge    | 合并两个分支                     |     /      | `git merge 其他分支名`                       |
-| status   | 查看当前分支的状态               |     /      | `git status`                                 |
-| log      | 查看提交历史(--graph)            |     /      | `git log`                                    |
-| reset    | 代码重置                         |     /      | `git reset`                                  |
-| blame    | 检查每一行代码最后一次是谁修改的 |     /      | `git blame 文件名`                           |
+| Command  | Description                                              | 与远程通信 | 实例                                         |
+| -------- | -------------------------------------------------------- | :--------: | -------------------------------------------- |
+| init     | 在本地初始化一个新的仓库                                 |     /      | `git init`                                   |
+| add      | 添加到暂存区                                             |     /      | `git add  aaa bbb ccc/`                      |
+| commit   | 将暂存区的修改提交到本地仓库(--amend追加)                |     /      | `git commit -m '注释'`                       |
+| push     | 将本地仓库的内容推送到远程仓库                           |     有     | `git push`                                   |
+| pull     | 将远程仓库的更新拉取到本地仓库，同时将代码与本地仓库合并 |     有     | `git pull origin 分支名`                     |
+| clone    | 将远程仓库克隆到本地                                     |     有     | `git clone git@github.com:xcw-user/day3.git` |
+| branch   | 管理分支(-d删除)                                         |     /      | `git branch`                                 |
+| checkout | 切换分支/代码回滚/代码还原                               |     /      | `git checkout 分支名 / 版本ID`               |
+| diff     | 不同版本之间进行差异对比                                 |     /      | `git diff 版本1 版本2`                       |
+| merge    | 合并两个分支                                             |     /      | `git merge 其他分支名`                       |
+| status   | 查看当前分支的状态                                       |     /      | `git status`                                 |
+| log      | 查看提交历史(--graph)                                    |     /      | `git log`                                    |
+| reset    | 将暂存区的内容撤出/重置版本                              |     /      | `git reset`                                  |
+| blame    | 检查每一行代码最后一次是谁修改的                         |     /      | `git blame 文件名`                           |
+| remote   | 管理与远程仓库的对接方式                                 |     /      |                                              |
+| config   | 管理本地配置                                             |     /      |                                              |
+| fetch    | 将远程仓库的提交拉取到本地仓库                           |     /      |                                              |
 
 
-
-```shell
-pip
-	python的安装目录/lib/python3.6/site-packags
-apt
-	1.下载的软件存放位置
-     /var/cache/apt/archives
-	2.安装后软件默认位置
-     /usr/share
-	3.可执行文件位置 
-     /usr/bin
-	4.配置文件位置
-     /etc
-	5.lib文件位置
-     /usr/lib
-所有文件: `.` === `./`
-```
 
