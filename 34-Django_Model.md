@@ -322,6 +322,8 @@ def createObject(request):
 
     # 创建对象3
     # person = Person.objects.create(name='花泽香菜',age=18)
+    # ------------------------------------------------------
+    # person = Person.object.update_or_create(name='花泽香菜',age=18)
     # person.save()
 
     # 创建对象4
