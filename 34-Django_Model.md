@@ -438,7 +438,7 @@ def testFilter1(request):
     return HttpResponse('查询成功')
 ```
 
-### 获取单个对象：
+### 获取单个model对象：
 
 ```tex
 1 get
@@ -625,11 +625,11 @@ def testAggr(request):
 ```python
 跨关系查询:
 	模型：
-		class Grade(models.Model):
-    		g_name = models.CharField(max_length=16)
+	class Grade(models.Model):
+		g_name = models.CharField(max_length=16)
         class Student(models.Model):
-            s_name = models.CharField(max_length=16)
-            s_grade = models.ForeignKey(Grade)
+        	s_name = models.CharField(max_length=16)
+        	s_grade = models.ForeignKey(Grade)
     使用：
         模型类名__属性名__比较运算符    实际上就是处理的数据库中的join
             Grade  ---> g_name      
@@ -645,7 +645,7 @@ def testAggr(request):
 ```python
 F对象:常适用于表内属性的值的比较
 	模型：
-		class Company(models.Model):
+	class Company(models.Model):
               c_name = models.CharField(max_length=16)
               c_gril_num = models.IntegerField(default=5)
               c_boy_num = models.IntegerField(default=3)
