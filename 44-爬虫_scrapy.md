@@ -47,12 +47,12 @@ scrapy.Request(url=url,callback='parse函数不加圆括号')
 ```tex
 2.项目组成：
 spiders
-	__init__.py   自定义的爬虫文件.py---》由我们自己创建，是实现爬虫核心功能的文件
+   |---- __init__.py   自定义的爬虫文件.py---》定义抓取内容的规则，由我们自己创建，是实现爬虫核心功能的文件
 __init__.py		  
-items.py ---》定义数据结构的地方，是一个继承自scrapy.Item的类
-middlewares.py ---》 中间件代理
-pipelines.py ---》 管道文件，里面只有一个类，用于处理下载数据的后续处理  默认是300优先级越小优先级越高(1-1000)
-settings.py	---》配置文件  比如：是否遵守robots协议，User-Agent定义等
+items.py            ---》 定义数据结构的地方，是一个继承自scrapy.Item的类  保存抓取的内容
+middlewares.py      ---》 中间件代理    下载器中间件是在引擎及下载器之间的特定钩子(specific hook)，处理Downloader传递给引擎的response
+pipelines.py        ---》 管道文件      里面只有一个类，用来定义如何过滤、存储等功能（比如导出到csv或者mysql等功能）  默认是300优先级越小优先级越高(1-1000)
+settings.py	    ---》 配置文件      比如：是否遵守robots协议，User-Agent定义等
 ```
 
 ```tex
